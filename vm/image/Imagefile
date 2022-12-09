@@ -1,11 +1,27 @@
 FROM archlinux/archlinux:v20221201.106936
 RUN echo 'archlinuxpilot' > /etc/hostname
+RUN cat /etc/resolv.conf
+RUN echo '195.201.112.86     dl.suckless.org' >> /etc/hosts
+RUN echo -e 'nameserver   8.8.8.8' > /etc/resolv.conf
+RUN echo -e 'nameserver   10.0.2.3' >> /etc/resolv.conf
+RUN cat /etc/resolv.conf
+RUN ping -c3 dl.suckless.org
+RUN systemctl status systemd-resolved
 RUN sudo pacman-key --init
 RUN sudo pacman-key --populate
-RUN sudo pacman -Sy --noconfirm archlinux-keyring
+RUN sudo pacman -Sy --needed --noconfirm archlinux-keyring
 RUN sudo pacman-key --populate
-RUN sudo pacman -Syu --noconfirm \
-  nano git base-devel vim tmux qemu-guest-agent python-pip \
+RUN sudo pacman -Syu --needed --noconfirm \
+  nano git base-devel vim tmux qemu-guest-agent python-pip
+RUN ping 8.8.8.8 -c 3
+RUN git clone https://aur.archlinux.org/st
+RUN git clone https://aur.archlinux.org/dwm
+RUN sudo chown -R vagrant:vagrant st
+RUN sudo chown -R vagrant:vagrant dwm
+RUN (cd st && su vagrant -c "makepkg -si --noconfirm")
+RUN (cd dwm && su vagrant -c "makepkg -si --noconfirm")
+
+RUN sudo pacman -Syu --noconfirm --needed \
   qconf \
   clang \
   zeromq \
@@ -26,3 +42,12 @@ RUN sudo pacman -Syu --noconfirm \
   qt5-multimedia \
   qt5-tools \
   qt5-charts
+
+RUN sudo echo 'allowed_users = anybody' >> /etc/X11/Xwrapper.config
+RUN sudo systemctl enable getty@tty1
+RUN sudo mkdir /etc/systemd/system/getty@tty1.service.d
+RUN (cd /etc/systemd/system/getty@tty1.service.d && \
+echo '[Service]' > autologin.conf && \
+echo 'ExecStart=' >> autologin.conf && \
+echo "ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin vagrant %I $TERM" >> autologin.conf \
+)
