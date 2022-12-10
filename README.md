@@ -19,6 +19,10 @@ Allows for using host gpu for graphics acceleration via opengl somehow.
 There is some previous work for 
 ###### Install (ubuntu)
 `sudo apt install libvirglrenderer1 virgl-server`
+#### sftp-server
+for sharing data directory
+###### Install (ubuntu)
+`sudo apt install openssh-sftp-server`
 
 ## Videos
 TODO: no embed in wiki pages?

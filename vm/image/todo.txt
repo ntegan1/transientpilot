@@ -1,0 +1,25 @@
+[vagrant@archlinuxpilot ~]$ cat .bash_profile 
+#
+# ~/.bash_profile
+#
+
+[[ -f ~/.bashrc ]] && . ~/.bashrc
+
+if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+  exec startx
+fi
+
+
+
+
+[vagrant@archlinuxpilot ~]$ cat .xinitrc
+exec dwm
+
+[root@archlinuxpilot vagrant]# cat $_
+[Service]
+ExecStart=
+ExecStart=-/sbin/agetty -o '-p -f -- \\u' --noclear --autologin vagrant %I $TERM
+
+
+GRUB_TIMEOUT=1
+GRUB_TIMEOUT_STYLE=countdown
