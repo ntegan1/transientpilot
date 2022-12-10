@@ -43,7 +43,7 @@ RUN sudo pacman -Syu --noconfirm --needed \
   ttf-liberation \
   qt5-charts
 
-RUN cat /home/vagrant/thirdparty/vimrcextra >> /etc/vim/vimrc
+RUN cat /home/vagrant/thirdparty/vimrcextra >> /etc/vimrc
 
 RUN sudo echo 'allowed_users = anybody' >> /etc/X11/Xwrapper.config
 RUN sed -i 's/^#NAutoVTs.*$/NAutoVTs=1/g' /etc/systemd/logind.conf
