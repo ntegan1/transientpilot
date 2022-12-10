@@ -1,0 +1,60 @@
+FROM archlinux/archlinux:v20221201.106936
+COPY ../../thirdparty/ /home/vagrant
+RUN sudo chown -R vagrant:vagrant /home/vagrant/thirdparty
+RUN echo 'if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then' >> /home/vagrant/.bash_profile
+RUN echo 'exec startx' >> /home/vagrant/.bash_profile
+RUN echo 'fi' >> /home/vagrant/.bash_profile
+
+RUN cp /home/vagrant/thirdparty/xinitrc /home/vagrant/.xinitrc
+RUN mkdir /home/vagrant/data
+RUN sudo chown -R vagrant:vagrant /home/vagrant/thirdparty
+RUN sudo chown -R vagrant:vagrant /home/vagrant/
+RUN echo 'archlinuxpilot' > /etc/hostname
+RUN sudo pacman-key --init
+RUN sudo pacman-key --populate
+RUN sudo pacman -Sy --needed --noconfirm archlinux-keyring
+RUN sudo pacman-key --populate
+RUN sudo pacman -Syu --needed --noconfirm \
+  nano git base-devel vim tmux qemu-guest-agent python-pip sshfs
+
+RUN (cd /home/vagrant/thirdparty/st && su vagrant -c "makepkg -si --noconfirm")
+RUN (cd /home/vagrant/thirdparty/dwm && su vagrant -c "makepkg -si --noconfirm")
+
+RUN sudo pacman -Syu --noconfirm --needed \
+  qconf \
+  clang \
+  zeromq \
+  capnproto \
+  ocl-icd \
+  opencl-headers \
+  clinfo \
+  cmake \
+  qt5-svg \
+  qt5-websockets \
+  qt5-x11extras \
+  qtav \
+  xorg-xinit \
+  xorg \
+  eigen \
+  ffmpeg \
+  qt5-location \
+  qt5-multimedia \
+  qt5-tools \
+  ttf-liberation \
+  qt5-charts
+
+RUN cat /home/vagrant/thirdparty/vimrcextra >> /etc/vimrc
+
+RUN sudo echo 'allowed_users = anybody' >> /etc/X11/Xwrapper.config
+RUN sed -i 's/^#NAutoVTs.*$/NAutoVTs=1/g' /etc/systemd/logind.conf
+RUN sed -i 's/^#ReserveVT.*$/ReserveVT=1/g' /etc/systemd/logind.conf
+RUN sudo systemctl enable getty@tty1
+RUN sudo mkdir /etc/systemd/system/getty@tty1.service.d
+RUN (cd /etc/systemd/system/getty@tty1.service.d && \
+echo '[Service]' > autologin.conf && \
+echo 'ExecStart=' >> autologin.conf && \
+echo "ExecStart=-/sbin/agetty -o '-p -f -- \\\\u' --noclear --autologin vagrant %I "'$TERM' >> autologin.conf && \
+echo 'GRUB_TIMEOUT=1' >> /etc/default/grub && \
+echo 'GRUB_TIMEOUT_STYLE=countdown' >> /etc/default/grub && \
+grub-mkconfig -o /boot/grub/grub.cfg \
+)

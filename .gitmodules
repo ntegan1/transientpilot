@@ -1,0 +1,6 @@
+[submodule "thirdparty/dwm"]
+	path = thirdparty/dwm
+	url = https://aur.archlinux.org/dwm.git
+[submodule "thirdparty/st"]
+	path = thirdparty/st
+	url = https://aur.archlinux.org/st.git
