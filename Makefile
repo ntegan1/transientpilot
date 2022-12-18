@@ -8,8 +8,9 @@
 VM_NAME = named
 VM_MEMORY = 3G
 VM_CPU_THREADS = 3
-VM_DISPLAY_XRES = 1280
-VM_DISPLAY_YRES = 720
+VM_DISPLAY_XRES = 1536
+VM_DISPLAY_YRES = 864
+#https://askubuntu.com/questions/377937/how-do-i-set-a-custom-resolution
 
 $(shell git submodule update --init > /dev/null 2>&1)
 
